@@ -38,16 +38,21 @@
    ```sh
    git clone https://github.com/7akoom/carify.git
    ```
-2. Install composer packages
+2. Copy .env.example file content and paste it in new .env file
+   ```sh
+   cd path/to/your/laravel/project
+   copy .env.example .env
+   ```
+3. Install composer packages
    ```sh
    composer install
    ```
-3. Generate App key
+4. Generate App key
     ```sh
    php artisan key:generate
    ```
 
-3. Migrate database and seeder
+5. Migrate database and seeder
     ```sh
    php artisan migrate --seed
    ```
