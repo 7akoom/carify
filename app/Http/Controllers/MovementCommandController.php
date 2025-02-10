@@ -1,0 +1,242 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Exports\MovementCommandExport;
+use App\Http\Requests\MovementCommand\MovementCommandRequest;
+use App\Imports\MovementCommandImport;
+use App\Models\Driver;
+use App\Models\Escort;
+use App\Models\MovementCommand;
+use App\Models\Truck;
+use App\Services\MovementCommand\CompleteMovementCommandsService;
+use App\Services\MovementCommand\StoreMovementCommandService;
+use App\Services\MovementCommand\UpdateMovementCommandService;
+use App\Traits\CommandNumGen;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+class MovementCommandController extends Controller
+{
+    use CommandNumGen;
+    protected $storemovementService;
+    protected $updatemovementService;
+    protected $completemovementService;
+    public function __construct(
+        StoreMovementCommandService $storemovementService,
+        UpdateMovementCommandService $updatemovementService,
+        CompleteMovementCommandsService $completemovementService
+    ) {
+        $this->storemovementService = $storemovementService;
+        $this->updatemovementService = $updatemovementService;
+        $this->completemovementService = $completemovementService;
+    }
+    public function index()
+    {
+        if (request()->user()->cannot('index', MovementCommand::class)) {
+            abort(403);
+        }
+        $commands = MovementCommand::with(['driver', 'truck', 'escort'])
+            ->paginate();
+        return view('commands.index', compact('commands'));
+    }
+
+    public function create()
+    {
+        if (request()->user()->cannot('create', MovementCommand::class)) {
+            abort(403);
+        }
+        $trucks = Truck::select('id', 'plate_number', 'kilometer_number')->get();
+        $escorts = Escort::select('first_name', 'last_name', 'id')->get();
+        $drivers = Driver::select('first_name', 'last_name', 'id')->get();
+        $number = $this->generateCustomNumber();
+
+        return view('commands.create', compact('trucks', 'escorts', 'drivers', 'number'));
+    }
+
+    public function store(MovementCommandRequest $request)
+    {
+        if (request()->user()->cannot('create', MovementCommand::class)) {
+            abort(403);
+        }
+        Log::info('request', $request->all());
+        try {
+            if (request()->user()->cannot('create', MovementCommand::class)) {
+                abort(403);
+            }
+            Log::info('validated request', $request->validated());
+            $this->storemovementService->store($request->validated());
+            return response()->json([
+                'message' => 'تم إضافة الحركة بنجاح.',
+                'redirect' => route('commands.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'message' => 'حدث خطأ أثناء إضافة الحركة.',
+                'error' => $e->getMessage(),
+                'redirect' => route('commands.index')
+            ], 500);
+        }
+    }
+
+    public function show($id)
+    {
+        $trucks = Truck::select('id', 'plate_number')->get();
+        $escorts = Escort::select('first_name', 'last_name', 'id')->get();
+        $drivers = Driver::select('first_name', 'last_name', 'id')->get();
+        $row = MovementCommand::with('escort')->where('id', $id)->first();
+        return response()->json([
+            'html' => view('commands.show', [
+                'row' => $row,
+                'trucks' => $trucks,
+                'escorts' => $escorts,
+                'drivers' => $drivers
+            ])->render(),
+            'row' => $row
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $command = new MovementCommand();
+        if (request()->user()->cannot('update', $command)) {
+            abort(403);
+        }
+        $trucks = Truck::select('id', 'plate_number')->get();
+        $escorts = Escort::select('first_name', 'last_name', 'id')->get();
+        $drivers = Driver::select('first_name', 'last_name', 'id')->get();
+        $row = MovementCommand::with('escort')->where('id', $id)->first();
+        return response()->json([
+            'html' => view('commands.edit', [
+                'row' => $row,
+                'trucks' => $trucks,
+                'escorts' => $escorts,
+                'drivers' => $drivers
+            ])->render(),
+            'row' => $row
+        ]);
+    }
+
+    public function update(MovementCommandRequest $request, $id)
+    {
+        try {
+            $command = new MovementCommand();
+            if (request()->user()->cannot('update', $command)) {
+                abort(403);
+            }
+            $this->updatemovementService->update($request->validated(), $id);
+            return response()->json([
+                'message' => 'تم تعديل الحركة بنجاح.',
+                'redirect' => route('commands.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+                'redirect' => route('commands.index')
+            ]);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $command = new MovementCommand();
+            if (request()->user()->cannot('delete', $command)) {
+                abort(403);
+            }
+            MovementCommand::where('id', $id)->delete();
+            DB::table('movement_escorts')->where('mov_command_id', $id)->delete();
+            return response()
+                ->json(['message' => 'تم حذف الحركة بنجاح', 'redirect' => route('commands.index')]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function MultiDelete(Request $request)
+    {
+        try {
+            if (request()->user()->cannot('MultiDelete', MovementCommand::class)) {
+                abort(403);
+            }
+
+            MovementCommand::whereIn('id', (array) $request['ids'])->delete();
+            DB::table('movement_escorts')->whereIn('mov_command_id', (array) $request['ids'])->delete();
+            return response()
+                ->json(['message' => 'تم حذف الحركات بنجاح', 'redirect' => route('commands.index')]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function ImportForm()
+    {
+        return response()->json([
+            'html' => view('commands.import')->render(),
+        ]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new MovementCommandExport, 'commands.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|max:2048',
+            ]);
+
+            Excel::import(new MovementCommandImport, $request->file('file'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function finish($id)
+    {
+        $command = new MovementCommand();
+        if (request()->user()->cannot('complete', $command)) {
+            abort(403);
+        }
+        $trucks = Truck::select('id', 'plate_number')->get();
+        $escorts = Escort::select('first_name', 'last_name', 'id')->get();
+        $drivers = Driver::select('first_name', 'last_name', 'id')->get();
+        $row = MovementCommand::with('escort')->where('id', $id)->first();
+        return response()->json([
+            'html' => view('commands.complete', [
+                'row' => $row,
+                'trucks' => $trucks,
+                'escorts' => $escorts,
+                'drivers' => $drivers
+            ])->render(),
+            'row' => $row
+        ]);
+    }
+
+    public function complete(MovementCommandRequest $request, $id)
+    {
+        try {
+            $command = new MovementCommand();
+            if (request()->user()->cannot('complete', $command)) {
+                abort(403);
+            }
+            $this->completemovementService->update($request->validated(), $id);
+            return response()->json([
+                'message' => 'تم انهاء الحركة بنجاح.',
+                'redirect' => route('commands.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+                'redirect' => route('commands.index')
+            ]);
+        }
+    }
+}
