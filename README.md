@@ -1,67 +1,61 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Carify
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Demo
+[Carify]()
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Screenshots
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+![Image](https://github.com/user-attachments/assets/c7a5a627-cad5-4200-a860-6de5134f5f76)
 
-## Learning Laravel
+![Image](https://github.com/user-attachments/assets/938ca558-1b16-42c4-9efd-4d15459991cc)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+![Image](https://github.com/user-attachments/assets/c835b8bf-d0cf-4e1e-baa8-bdb2c62b3afc)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+![Image](https://github.com/user-attachments/assets/d6864586-54b8-4a82-976b-eabf92f5e46c)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+![Image](https://github.com/user-attachments/assets/5d862be1-0a19-4fca-8620-a95036e77314)
 
-## Laravel Sponsors
+![Image](https://github.com/user-attachments/assets/09a6d058-ef8e-43ed-b5c8-fe927988c67a)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+![Image](https://github.com/user-attachments/assets/225990a2-dda0-4abe-9546-60248193850d)
 
-### Premium Partners
+![Image](https://github.com/user-attachments/assets/dc27a73e-6ee8-4a16-9389-eec8e42d94b8)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+![Image](https://github.com/user-attachments/assets/57d65193-357c-465e-8caa-7aa20b795beb)
 
-## Contributing
+![Image](https://github.com/user-attachments/assets/0bd0cc9f-a29e-4138-b6b6-612462e4dcca)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+![Image](https://github.com/user-attachments/assets/e4cd163f-fa68-446b-9a1d-d24600b6b106)
 
-## Code of Conduct
+![Image](https://github.com/user-attachments/assets/f142c582-3bce-4d4c-ae14-355e402d0e9f)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+### Installation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Clone the repo
+   ```sh
+   git clone https://github.com/7akoom/carify.git
+   ```
+2. Install composer packages
+   ```sh
+   composer install
+   ```
+3. Generate App key
+    ```sh
+   php artisan key:generate
+   ```
 
-## License
+3. Migrate database and seeder
+    ```sh
+   php artisan migrate --seed
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# carify
+3. Start project
+    ```sh
+   php artisan serve
+   ```
+## Contact
+
+Hkmt Ali - [Linkdeind](www.linkedin.com/in/hkmt-ali)
